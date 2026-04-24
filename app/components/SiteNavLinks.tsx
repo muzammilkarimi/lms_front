@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { API_BASE_URL } from "../lib/api";
-import { clearStudentToken, getStudentToken } from "../lib/studentAuth";
+import { clearStudentToken, getStudentToken, STUDENT_AUTH_EVENT } from "../lib/studentAuth";
 
 type MenuItem = {
   label: string;
@@ -63,9 +63,11 @@ export function SiteNavLinks({ items }: SiteNavLinksProps) {
     }
 
     window.addEventListener("storage", handleStorage);
+    window.addEventListener(STUDENT_AUTH_EVENT, handleStorage);
     return () => {
       isMounted = false;
       window.removeEventListener("storage", handleStorage);
+      window.removeEventListener(STUDENT_AUTH_EVENT, handleStorage);
     };
   }, []);
 

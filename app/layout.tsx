@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
-import { SiteFooter } from "./components/SiteFooter";
-import { SiteHeader } from "./components/SiteHeader";
+import { AppShell } from "./components/AppShell";
 import "./globals.css";
 
 const inter = Inter({
@@ -27,9 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable}`}>
       <body>
-        <SiteHeader />
-        {children}
-        <SiteFooter />
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );

@@ -11,27 +11,32 @@ export function StudentRegisterForm() {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     setMessage("Creating account...");
-    const response = await fetch(`${API_BASE_URL}/api/students/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: form.get("name"),
-        email: form.get("email"),
-        password: form.get("password"),
-        phone: form.get("phone"),
-        college: form.get("college"),
-        course: form.get("course"),
-        graduation_year: form.get("graduation_year"),
-        skills: String(form.get("skills")).split(",").map((skill) => skill.trim()).filter(Boolean),
-      }),
-    });
-    const data = await response.json();
-    if (!response.ok) {
-      setMessage(data.detail ?? "Could not create account.");
-      return;
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/students/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.get("name"),
+          email: form.get("email"),
+          password: form.get("password"),
+          phone: form.get("phone"),
+          college: form.get("college"),
+          course: form.get("course"),
+          graduation_year: form.get("graduation_year"),
+          skills: String(form.get("skills")).split(",").map((skill) => skill.trim()).filter(Boolean),
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        setMessage(data.detail ?? "Could not create account.");
+        return;
+      }
+      await setStudentToken(data.token);
+      window.location.replace("/student-dashboard");
+    } catch {
+      setMessage("Registration service is not reachable right now. Please try again.");
     }
-    setStudentToken(data.token);
-    window.location.href = "/student-dashboard";
   }
 
   return (

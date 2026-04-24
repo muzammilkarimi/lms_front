@@ -11,6 +11,8 @@ export type EventItem = {
   description: string;
   speaker: string;
   registration_link: string;
+  event_kind?: "standard" | "coding_assessment";
+  coding_assessment_id?: number | null;
 };
 
 type EventsBoardProps = {
@@ -58,6 +60,21 @@ export function EventsBoard({ events }: EventsBoardProps) {
     setQuery("");
     setMode("all");
     setActiveEventId(events[0]?.id ?? 0);
+  }
+
+  function eventHref(event: EventItem) {
+    if (event.event_kind === "coding_assessment" && event.coding_assessment_id) {
+      return `/coding-evaluation/${event.coding_assessment_id}`;
+    }
+    return event.registration_link;
+  }
+
+  function copyEventLink(event: EventItem) {
+    const href = eventHref(event);
+    const value = href.startsWith("http")
+      ? href
+      : `${window.location.origin}${href}`;
+    navigator.clipboard?.writeText(value);
   }
 
   return (
@@ -144,19 +161,26 @@ export function EventsBoard({ events }: EventsBoardProps) {
               </div>
               <div className="eventSpotlightBody">
                 <div className="eventTileTop">
-                  <span>{activeEvent.mode}</span>
+                  <span>
+                    {activeEvent.event_kind === "coding_assessment" ? "Coding evaluation" : activeEvent.mode}
+                  </span>
                   <small>{activeEvent.speaker}</small>
                 </div>
                 <h2>{activeEvent.title}</h2>
                 <p>{activeEvent.description}</p>
                 <div className="eventActionStrip">
-                  <a className="primaryButton" href={activeEvent.registration_link} target="_blank" rel="noreferrer">
-                    Register
+                  <a
+                    className="primaryButton"
+                    href={eventHref(activeEvent)}
+                    target={activeEvent.event_kind === "coding_assessment" ? undefined : "_blank"}
+                    rel={activeEvent.event_kind === "coding_assessment" ? undefined : "noreferrer"}
+                  >
+                    {activeEvent.event_kind === "coding_assessment" ? "Start assessment" : "Register"}
                   </a>
                   <button
                     className="secondaryButton"
                     type="button"
-                    onClick={() => navigator.clipboard?.writeText(activeEvent.registration_link)}
+                    onClick={() => copyEventLink(activeEvent)}
                   >
                     Copy link
                   </button>

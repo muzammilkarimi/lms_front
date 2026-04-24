@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { type KeyboardEvent as ReactKeyboardEvent, useEffect, useMemo, useState } from "react";
 import { API_BASE_URL } from "../lib/api";
 import { getStudentToken, studentAuthHeaders } from "../lib/studentAuth";
 
@@ -16,6 +16,8 @@ export type Job = {
   compensation: string;
   last_date: string;
   apply_link: string;
+  attachment_name?: string | null;
+  attachment_url?: string | null;
 };
 
 type JobsBoardProps = {
@@ -45,6 +47,21 @@ function unique(values: string[]) {
   return Array.from(new Set(values)).sort((a, b) => a.localeCompare(b));
 }
 
+function assetUrl(value: string) {
+  return value.startsWith("http") ? value : `${API_BASE_URL}${value}`;
+}
+
+function attachmentKind(job: Job) {
+  const target = `${job.attachment_name ?? ""} ${job.attachment_url ?? ""}`.toLowerCase();
+  if (target.endsWith(".pdf") || target.includes(".pdf")) {
+    return "pdf";
+  }
+  if (/\.(png|jpe?g|webp|gif)/.test(target)) {
+    return "image";
+  }
+  return "file";
+}
+
 export function JobsBoard({ jobs }: JobsBoardProps) {
   const [query, setQuery] = useState("");
   const [jobType, setJobType] = useState("all");
@@ -52,6 +69,7 @@ export function JobsBoard({ jobs }: JobsBoardProps) {
   const [skill, setSkill] = useState("all");
   const [applications, setApplications] = useState<Record<number, string>>({});
   const [message, setMessage] = useState("");
+  const [detailJob, setDetailJob] = useState<Job | null>(null);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [resumeCheck, setResumeCheck] = useState<ResumeCheck | null>(null);
   const [isChecking, setIsChecking] = useState(false);
@@ -106,6 +124,21 @@ export function JobsBoard({ jobs }: JobsBoardProps) {
     setSkill("all");
   }
 
+  function openJobDetails(job: Job) {
+    setDetailJob(job);
+  }
+
+  function closeJobDetails() {
+    setDetailJob(null);
+  }
+
+  function handleJobCardKeyDown(event: ReactKeyboardEvent<HTMLElement>, job: Job) {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      openJobDetails(job);
+    }
+  }
+
   async function submitApplication(jobId: number, check?: ResumeCheck, appliedWithAiFix = false) {
     setMessage("Saving application...");
     const response = await fetch(`${API_BASE_URL}/api/jobs/${jobId}/apply`, {
@@ -138,6 +171,7 @@ export function JobsBoard({ jobs }: JobsBoardProps) {
       window.location.href = "/student-login";
       return;
     }
+    setDetailJob(null);
     setSelectedJob(job);
     setIsChecking(true);
     setMessage("Checking resume with AI...");
@@ -255,10 +289,17 @@ export function JobsBoard({ jobs }: JobsBoardProps) {
         {filteredJobs.length ? (
           <div className="jobGrid">
             {filteredJobs.map((job) => (
-              <article className="jobCard" key={job.id}>
+              <article
+                className="jobCard jobCardCompact"
+                key={job.id}
+                onClick={() => openJobDetails(job)}
+                onKeyDown={(event) => handleJobCardKeyDown(event, job)}
+                role="button"
+                tabIndex={0}
+              >
                 <div className="cardTopline">
                   <span>{job.job_type}</span>
-                  <small>{formatDate(job.last_date)}</small>
+                  <small>Apply by {formatDate(job.last_date)}</small>
                 </div>
                 <div className="jobCompanyRow">
                   <div className="jobCompanyMark" aria-hidden="true">
@@ -270,27 +311,16 @@ export function JobsBoard({ jobs }: JobsBoardProps) {
                   </div>
                 </div>
                 <h2>{job.title}</h2>
-                <p className="jobDescription">{job.description}</p>
-                <div className="jobQuickInfo">
-                  <p>
-                    <span>Pay</span>
-                    {job.compensation}
-                  </p>
-                  <p>
-                    <span>Fit</span>
-                    {job.eligibility}
-                  </p>
-                </div>
+                <p className="jobCardSnippet">{job.description}</p>
                 <div className="pillRow">
-                  {job.skills.map((item) => (
+                  {job.skills.slice(0, 3).map((item) => (
                     <span key={item}>{item}</span>
                   ))}
+                  {job.skills.length > 3 ? <span>+{job.skills.length - 3}</span> : null}
                 </div>
                 <div className="jobCardFooter">
-                  {applications[job.id] ? <small>{applications[job.id].replaceAll("_", " ")}</small> : null}
-                  <button className="primaryButton" type="button" onClick={() => checkAndApply(job)}>
-                    {applications[job.id] ? "Applied" : "Apply now"}
-                  </button>
+                  <small>{applications[job.id] ? applications[job.id].replaceAll("_", " ") : "Tap to view details"}</small>
+                  <strong>View role</strong>
                 </div>
               </article>
             ))}
@@ -305,6 +335,110 @@ export function JobsBoard({ jobs }: JobsBoardProps) {
           </div>
         )}
       </section>
+      {detailJob ? (
+        <div
+          className="jobDetailsOverlay"
+          role="dialog"
+          aria-modal="true"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) {
+              closeJobDetails();
+            }
+          }}
+        >
+          <article className="jobDetailsModal">
+            <div className="jobDetailsHeader">
+              <div>
+                <p className="eyebrow">{detailJob.company}</p>
+                <h2>{detailJob.title}</h2>
+                <p>
+                  {detailJob.location} | {detailJob.job_type} | Apply by {formatDate(detailJob.last_date)}
+                </p>
+              </div>
+              <button className="secondaryButton" type="button" onClick={closeJobDetails}>
+                Close
+              </button>
+            </div>
+
+            <div className="jobDetailsGrid">
+              <div className="jobDetailsContent">
+                <div className="jobDetailsMeta">
+                  <article>
+                    <span>Compensation</span>
+                    <p>{detailJob.compensation}</p>
+                  </article>
+                  <article>
+                    <span>Eligibility</span>
+                    <p>{detailJob.eligibility}</p>
+                  </article>
+                </div>
+
+                <section className="jobDetailsSection">
+                  <h3>Role details</h3>
+                  <p>{detailJob.description}</p>
+                </section>
+
+                <section className="jobDetailsSection">
+                  <h3>Skills</h3>
+                  <div className="pillRow">
+                    {detailJob.skills.map((item) => (
+                      <span key={item}>{item}</span>
+                    ))}
+                  </div>
+                </section>
+
+                <div className="jobDetailsActions">
+                  <button
+                    className="primaryButton"
+                    disabled={Boolean(applications[detailJob.id])}
+                    type="button"
+                    onClick={() => checkAndApply(detailJob)}
+                  >
+                    {applications[detailJob.id] ? "Already applied" : "Check resume and apply"}
+                  </button>
+                  <a className="secondaryButton" href={detailJob.apply_link} rel="noreferrer" target="_blank">
+                    Company page
+                  </a>
+                </div>
+              </div>
+
+              <aside className="jobDocumentPanel">
+                <div className="jobDocumentHeader">
+                  <div>
+                    <span>JD document</span>
+                    <strong>{detailJob.attachment_name ?? "No file uploaded"}</strong>
+                  </div>
+                  {detailJob.attachment_url ? (
+                    <a href={assetUrl(detailJob.attachment_url)} rel="noreferrer" target="_blank">
+                      Open file
+                    </a>
+                  ) : null}
+                </div>
+
+                <div className="jobDocumentViewport">
+                  {detailJob.attachment_url ? (
+                    attachmentKind(detailJob) === "pdf" ? (
+                      <iframe src={assetUrl(detailJob.attachment_url)} title={`JD for ${detailJob.title}`} />
+                    ) : attachmentKind(detailJob) === "image" ? (
+                      <img alt={detailJob.attachment_name ?? `Attachment for ${detailJob.title}`} src={assetUrl(detailJob.attachment_url)} />
+                    ) : (
+                      <div className="jobDocumentEmpty">
+                        <h3>Preview not available</h3>
+                        <p>Open the attached file in a new tab to view the full document.</p>
+                      </div>
+                    )
+                  ) : (
+                    <div className="jobDocumentEmpty">
+                      <h3>No JD uploaded</h3>
+                      <p>The admin has not attached a document for this role yet.</p>
+                    </div>
+                  )}
+                </div>
+              </aside>
+            </div>
+          </article>
+        </div>
+      ) : null}
       {selectedJob && resumeCheck && !resumeCheck.can_apply ? (
         <div className="resumeCheckOverlay" role="dialog" aria-modal="true">
           <article className="resumeCheckModal">

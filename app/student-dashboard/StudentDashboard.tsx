@@ -14,6 +14,18 @@ type DashboardApplication = {
   admin_note: string;
 };
 
+type DashboardCodingAttempt = {
+  id: number;
+  assessment_id: number;
+  assessment_title: string;
+  status: string;
+  total_score: number;
+  solved_count: number;
+  question_count: number;
+  started_at: string;
+  submitted_at: string | null;
+};
+
 type StudentDashboardData = {
   student: {
     name: string;
@@ -23,7 +35,9 @@ type StudentDashboardData = {
   resume_completion: number;
   applied_jobs: number;
   latest_mock_score: number | null;
+  latest_coding_score: number | null;
   applications: DashboardApplication[];
+  coding_attempts: DashboardCodingAttempt[];
 };
 
 function statusLabel(value: string) {
@@ -102,6 +116,10 @@ export function StudentDashboard() {
           <span>{data.latest_mock_score ?? "-"}</span>
           <p>Latest mock score</p>
         </article>
+        <article>
+          <span>{data.latest_coding_score ?? "-"}</span>
+          <p>Latest coding score</p>
+        </article>
       </section>
 
       <section className="studentDashboardGrid">
@@ -117,29 +135,56 @@ export function StudentDashboard() {
           <a className="secondaryButton" href="/mock-ai-interview">
             Practice interview
           </a>
+          <a className="secondaryButton" href="/events">
+            Open coding event
+          </a>
         </div>
 
-        <div className="studentApplicationsPanel">
-          <span className="dashboardBadge">Applications</span>
-          <h2>Job status tracker</h2>
-          {data.applications.length ? (
-            <div className="studentApplicationList">
-              {data.applications.map((application) => (
-                <article key={application.id}>
-                  <div>
-                    <strong>{application.job_title}</strong>
-                    <p>
-                      {application.company} · {application.location}
-                    </p>
-                  </div>
-                  <span>{statusLabel(application.status)}</span>
-                  {application.admin_note ? <small>{application.admin_note}</small> : null}
-                </article>
-              ))}
-            </div>
-          ) : (
-            <p>No applications yet. Apply to a role from the Jobs page.</p>
-          )}
+        <div className="studentDashboardStack">
+          <div className="studentApplicationsPanel">
+            <span className="dashboardBadge">Applications</span>
+            <h2>Job status tracker</h2>
+            {data.applications.length ? (
+              <div className="studentApplicationList">
+                {data.applications.map((application) => (
+                  <article key={application.id}>
+                    <div>
+                      <strong>{application.job_title}</strong>
+                      <p>
+                        {application.company} - {application.location}
+                      </p>
+                    </div>
+                    <span>{statusLabel(application.status)}</span>
+                    {application.admin_note ? <small>{application.admin_note}</small> : null}
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p>No applications yet. Apply to a role from the Jobs page.</p>
+            )}
+          </div>
+
+          <div className="studentCodingPanel">
+            <span className="dashboardBadge">Coding evaluation</span>
+            <h2>Recent assessment attempts</h2>
+            {data.coding_attempts.length ? (
+              <div className="studentCodingList">
+                {data.coding_attempts.map((attempt) => (
+                  <article key={attempt.id}>
+                    <div>
+                      <strong>{attempt.assessment_title}</strong>
+                      <p>
+                        {attempt.solved_count}/{attempt.question_count} solved - {statusLabel(attempt.status)}
+                      </p>
+                    </div>
+                    <span>{attempt.total_score}</span>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p>No coding attempts yet. Start one from the Events page.</p>
+            )}
+          </div>
         </div>
       </section>
     </main>

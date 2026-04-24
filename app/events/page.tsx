@@ -24,13 +24,15 @@ const fallbackEvents: EventItem[] = [
   },
   {
     id: 3,
-    title: "GitHub Portfolio Night",
-    event_date: "2026-05-16",
-    event_time: "18:00:00",
-    mode: "Online",
-    description: "Clean up pinned repositories, write better READMEs, and prepare a project walkthrough.",
-    speaker: "Alumni Mentors",
-    registration_link: "https://example.com/events/github-portfolio",
+    title: "Coding Evaluation Arena",
+    event_date: "2026-05-18",
+    event_time: "14:00:00",
+    mode: "Assessment room",
+    description: "Take a timed coding evaluation with three random Python questions and save your score to the dashboard.",
+    speaker: "Placement Tech Panel",
+    registration_link: "https://example.com/events/coding-evaluation-arena",
+    event_kind: "coding_assessment",
+    coding_assessment_id: 1,
   },
 ];
 
