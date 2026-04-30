@@ -7004,9 +7004,18 @@ button:disabled {
     grid-template-columns: 1fr;
   }
 
+  .homeShowcase {
+    height: auto;
+    min-height: auto;
+    padding-bottom: 40px;
+  }
+
   .homeClosing {
     align-items: stretch;
     flex-direction: column;
+    margin-top: 60px;
+    padding: 40px 16px;
+    position: relative;
   }
 
   .homeHeroOrbOne,
@@ -7212,6 +7221,7 @@ button:disabled {
 
   .homeHero {
     min-height: 620px;
+    padding-top: 140px;
   }
 
   .homeScrollCue {
