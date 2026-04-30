@@ -7097,6 +7097,10 @@ button:disabled {
     --page-top-offset: 96px;
   }
 
+  main.homePage {
+    --page-top-offset: 0px;
+  }
+
   .nav {
     display: none !important;
   }
@@ -7157,7 +7161,7 @@ button:disabled {
 
   .hero {
     min-height: auto;
-    padding-top: 54px;
+    padding-top: 100px;
   }
 
   .heroProduct {
