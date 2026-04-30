@@ -32,7 +32,7 @@ const initialResume: ResumeState = {
   summary: "Computer Science student seeking a fresher software role with strong foundations in frontend development, APIs, SQL, and problem solving.",
   education: "B.Tech Computer Science, 2026 - ABC Institute of Technology, CGPA: 8.4/10\nClass XII - Science Stream, 2022, 86%",
   skills: "React, TypeScript, JavaScript, Python, SQL, HTML, CSS, Git",
-  projects: "Placement Portal - Built job listing and resume builder screens using Next.js.\nAPI Tracker - Created a FastAPI service for tracking study tasks.",
+  projects: "Gyansutra AI - Built job listing and resume builder screens using Next.js.\nAPI Tracker - Created a FastAPI service for tracking study tasks.",
   experience: "Frontend Intern - Improved reusable components and fixed responsive layout bugs.",
   achievements: "Solved 250+ DSA problems across arrays, strings, trees, and dynamic programming.\nLed a team of 4 for a college hackathon prototype.",
   certifications: "Python Basics Certificate\nWeb Development Bootcamp",

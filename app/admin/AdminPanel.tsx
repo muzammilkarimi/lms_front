@@ -108,7 +108,7 @@ function assetUrl(value: string | null | undefined) {
 }
 
 export function AdminPanel() {
-  const [email, setEmail] = useState("admin@pathshala.com");
+  const [email, setEmail] = useState("admin@gyansutra.com");
   const [password, setPassword] = useState("admin123");
   const [token, setToken] = useState("");
   const [mode, setMode] = useState<AdminMode>("overview");

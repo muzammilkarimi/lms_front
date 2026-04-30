@@ -2,6 +2,7 @@
 
 import { useCallback } from "react";
 import type { CSSProperties, PointerEvent as ReactPointerEvent } from "react";
+import Link from "next/link";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 
 type Track = {
@@ -63,11 +64,11 @@ type HomeLandingProps = {
 const easing = [0.22, 1, 0.36, 1] as const;
 
 const sectionVariants: Variants = {
-  hidden: { opacity: 0, y: 28 },
+  hidden: { opacity: 0, y: 14 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.72, ease: easing },
+    transition: { duration: 0.6, ease: easing },
   },
 };
 
@@ -82,11 +83,11 @@ const staggerVariants: Variants = {
 };
 
 const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 22 },
+  hidden: { opacity: 0, y: 10 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.62, ease: easing },
+    transition: { duration: 0.5, ease: easing },
   },
 };
 
@@ -200,17 +201,15 @@ export function HomeLanding({ portal, actions, workflow, heroMetrics }: HomeLand
         style={heroInteractiveStyle}
       >
         <div aria-hidden="true" className="homeHeroBackdrop" />
-        <div className="homeHeroShade" aria-hidden="true" />
-        <div className="homeHeroNetwork" aria-hidden="true">
-          {heroNetworkLinks.map((link, index) => (
-            <span className="homeNetworkLink" key={`link-${index}`} style={createLinkStyle(link)}>
-              <span className="homeNetworkLinkBeam" style={{ animationDelay: link.delay }} />
-            </span>
-          ))}
-          {heroNetworkNodes.map((node, index) => (
-            <span className="homeNetworkNode" key={`node-${index}`} style={createNodeStyle(node)} />
-          ))}
+        <div className="homeHeroAmbient" aria-hidden="true">
+          <div className="homeOrb homeOrbOne" />
+          <div className="homeOrb homeOrbTwo" />
+          <div className="homeOrb homeOrbThree" />
         </div>
+        <div className="homeHeroDots" aria-hidden="true" />
+        <div className="pixelCorner pixelCornerLeft" aria-hidden="true" />
+        <div className="pixelCorner pixelCornerRight" aria-hidden="true" />
+        <div className="homeHeroShade" aria-hidden="true" />
 
         <motion.div
           animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
@@ -225,21 +224,22 @@ export function HomeLanding({ portal, actions, workflow, heroMetrics }: HomeLand
               initial={reduceMotion ? false : { opacity: 0, y: 14 }}
               transition={{ delay: 0.08, duration: 0.46, ease: easing }}
             >
-              Placement workspace
+              Built by IITians
             </motion.p>
             <motion.h1
               animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
               initial={reduceMotion ? false : { opacity: 0, y: 24 }}
               transition={{ delay: 0.12, duration: 0.72, ease: easing }}
             >
-              Prep, practice, and placement in one workspace.
+              Your complete <br />
+              <span className="homeHeroHighlight">placement</span> workspace.
             </motion.h1>
             <motion.p
               animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
               initial={reduceMotion ? false : { opacity: 0, y: 20 }}
               transition={{ delay: 0.18, duration: 0.68, ease: easing }}
             >
-              {portal.tagline}
+              Track jobs, refine resumes, practice interviews, and join live sessions. Your all-in-one platform to master your career journey and land your dream job with confidence.
             </motion.p>
             <motion.div
               animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
@@ -256,34 +256,20 @@ export function HomeLanding({ portal, actions, workflow, heroMetrics }: HomeLand
             </motion.div>
           </div>
 
-          <motion.div
-            aria-label="Portal highlights"
-            className="homeHeroMetrics"
-            initial={sectionInitial}
-            variants={staggerVariants}
-            whileInView={sectionWhileInView}
-            viewport={{ once: true, amount: 0.35 }}
-          >
-            {heroMetrics.map((item) => (
-              <motion.article className="homeHeroMetric" key={item.label} variants={itemVariants}>
-                <strong>{item.value}</strong>
-                <span>{item.label}</span>
-              </motion.article>
-            ))}
-          </motion.div>
+
         </motion.div>
 
-        <motion.div aria-hidden="true" className="homeScrollCue">
+        {/* <motion.div aria-hidden="true" className="homeScrollCue">
           <span />
           <small>Scroll</small>
-        </motion.div>
+        </motion.div> */}
       </motion.section>
 
       <motion.section
         className="homeLaunchpad"
         initial={sectionInitial}
         variants={sectionVariants}
-        viewport={{ once: true, amount: 0.22 }}
+        viewport={{ once: true, amount: 0.1 }}
         whileInView={sectionWhileInView}
       >
         <div className="homeSectionHeader">
@@ -300,7 +286,7 @@ export function HomeLanding({ portal, actions, workflow, heroMetrics }: HomeLand
           className="homeLaunchGrid"
           initial={sectionInitial}
           variants={staggerVariants}
-          viewport={{ once: true, amount: 0.22 }}
+          viewport={{ once: true, amount: 0.1 }}
           whileInView={sectionWhileInView}
         >
           {actions.map((action) => (
@@ -323,7 +309,7 @@ export function HomeLanding({ portal, actions, workflow, heroMetrics }: HomeLand
         className="homeJourney"
         initial={sectionInitial}
         variants={sectionVariants}
-        viewport={{ once: true, amount: 0.22 }}
+        viewport={{ once: true, amount: 0.1 }}
         whileInView={sectionWhileInView}
       >
         <div className="homeSectionHeader">
@@ -339,18 +325,29 @@ export function HomeLanding({ portal, actions, workflow, heroMetrics }: HomeLand
           className="homeJourneyRail"
           initial={sectionInitial}
           variants={staggerVariants}
-          viewport={{ once: true, amount: 0.22 }}
+          viewport={{ once: true, amount: 0.1 }}
           whileInView={sectionWhileInView}
         >
-          {workflow.map((item) => (
-            <motion.article key={item.step} variants={itemVariants}>
-              <b>{item.step}</b>
-              <div>
-                <strong>{item.title}</strong>
-                <p>{item.detail}</p>
-              </div>
-            </motion.article>
-          ))}
+          {workflow.map((item) => {
+            const getLink = (step: string) => {
+              if (step === "01") return "/resume-builder";
+              if (step === "02") return "/jobs";
+              if (step === "03") return "/mock-ai-interview";
+              return "/student-dashboard";
+            };
+            return (
+              <motion.article key={item.step} variants={itemVariants}>
+                <b>{item.step}</b>
+                <div>
+                  <strong>{item.title}</strong>
+                  <p>{item.detail}</p>
+                  <Link href={getLink(item.step)} className="journeyCta">
+                    Try now <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14"><path fillRule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clipRule="evenodd" /></svg>
+                  </Link>
+                </div>
+              </motion.article>
+            );
+          })}
         </motion.div>
       </motion.section>
 
@@ -358,27 +355,16 @@ export function HomeLanding({ portal, actions, workflow, heroMetrics }: HomeLand
         className="homeShowcase"
         initial={sectionInitial}
         variants={sectionVariants}
-        viewport={{ once: true, amount: 0.18 }}
+        viewport={{ once: true, amount: 0.1 }}
         whileInView={sectionWhileInView}
       >
-        <motion.div
-          className="homeShowcaseMedia"
-          initial={reduceMotion ? false : { opacity: 0, scale: 0.98, y: 24 }}
-          transition={{ duration: 0.74, ease: easing }}
-          viewport={{ once: true, amount: 0.3 }}
-          whileInView={reduceMotion ? undefined : { opacity: 1, scale: 1, y: 0 }}
-        >
-          <img
-            src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1400&q=80"
-            alt="Students discussing projects together"
-          />
-        </motion.div>
+
 
         <motion.div
           className="homeShowcasePanels"
           initial={sectionInitial}
           variants={staggerVariants}
-          viewport={{ once: true, amount: 0.18 }}
+          viewport={{ once: true, amount: 0.1 }}
           whileInView={sectionWhileInView}
         >
           <motion.section className="homePanel" variants={itemVariants}>
@@ -392,6 +378,7 @@ export function HomeLanding({ portal, actions, workflow, heroMetrics }: HomeLand
                   </span>
                   <strong>{track.title}</strong>
                   <p>{track.description}</p>
+                  <Link href="/classes" className="trackCta">View track</Link>
                 </motion.article>
               ))}
             </div>
@@ -404,7 +391,7 @@ export function HomeLanding({ portal, actions, workflow, heroMetrics }: HomeLand
               {portal.events.slice(0, 3).map((event) => (
                 <motion.article key={event} variants={itemVariants}>
                   <strong>{event}</strong>
-                  <p>Open the room, keep the discussion moving, and leave with something concrete.</p>
+                  <Link href="/events" className="eventCta">Join room</Link>
                 </motion.article>
               ))}
             </div>
@@ -422,7 +409,7 @@ export function HomeLanding({ portal, actions, workflow, heroMetrics }: HomeLand
         <div>
           <p className="eyebrow">Ready when they are</p>
           <h2>Give every student one place to prepare, apply, and keep moving.</h2>
-          <p>{portal.club_name} already has the loop. Now the home page feels like it.</p>
+          <p>Gyansutra AI provides the complete loop for placement success. Join the next generation of builders today.</p>
         </div>
         <motion.div
           className="homeClosingActions"

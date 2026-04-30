@@ -19,7 +19,7 @@ const fallbackEvents: EventItem[] = [
     event_time: "10:00:00",
     mode: "Lab 2",
     description: "Practice arrays, hashing, and two-pointer patterns with peer review after every round.",
-    speaker: "Programming Pathshala Club",
+    speaker: "Gyansutra AI",
     registration_link: "https://example.com/events/dsa-jam",
   },
   {

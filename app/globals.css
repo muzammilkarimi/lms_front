@@ -19,6 +19,8 @@
   --radius: 8px;
   --shadow: 0 28px 90px rgba(0, 0, 0, 0.38);
   --max: 1180px;
+  --font-body: var(--font-lexend);
+  --font-display: var(--font-lexend);
 }
 
 * {
@@ -62,7 +64,7 @@ body {
     radial-gradient(circle at 60% 90%, rgba(255, 184, 107, 0.1), transparent 28rem),
     linear-gradient(180deg, #080a0f 0%, #0b0f16 44%, #07090d 100%);
   color: var(--text);
-  font-family: var(--font-body), Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--font-body), sans-serif;
 }
 
 body::before {
@@ -724,6 +726,116 @@ button.secondaryButton {
   margin-right: auto;
   max-width: 680px;
   overflow: hidden;
+}
+
+.menuLinks a:hover,
+.menuLinks .activeNavLink {
+  border-color: rgba(69, 224, 168, 0.28);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.mobileBrand {
+  display: none;
+}
+
+.desktopBrand {
+  color: #fff;
+  font-family: var(--font-display), sans-serif;
+  font-weight: 850;
+  font-size: 0.94rem;
+  letter-spacing: -0.01em;
+  padding: 0 10px 0 6px;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.desktopBrand:hover {
+  opacity: 0.8;
+}
+
+@keyframes brandAIShimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.brandAI {
+  background: linear-gradient(90deg, #3b82f6, #2dd4bf, #3b82f6);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 900;
+  margin-left: 2px;
+  animation: brandAIShimmer 4s linear infinite;
+}
+
+.navSeparator {
+  background: rgba(255, 255, 255, 0.12);
+  height: 18px;
+  width: 1px;
+  margin-right: 4px;
+}
+
+.menuToggle {
+  align-items: center;
+  background: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  display: none;
+  height: 40px;
+  justify-content: center;
+  padding: 0;
+  width: 40px;
+  z-index: 100;
+}
+
+.mobileMenuOverlay {
+  backdrop-filter: blur(25px);
+  background: rgba(8, 10, 15, 0.96);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  left: 0;
+  padding: 100px 32px 40px;
+  position: fixed;
+  top: 0;
+  width: 100vw;
+  z-index: 50;
+}
+
+.mobileMenuLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.mobileMenuLinks a {
+  color: #fff;
+  font-family: var(--font-display), sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.mobileMenuLinks a:active {
+  color: var(--accent);
+}
+
+.mobileMenuLinks .activeNavLink {
+  color: var(--accent);
+}
+
+@media (max-width: 840px) {
+  nav .menuLinks {
+    display: none;
+  }
+  .menuToggle {
+    display: flex;
+  }
 }
 
 .jobHeroStats span {
@@ -2533,7 +2645,7 @@ button.secondaryButton {
 
 .interviewSetupShell .interviewDetailsPanel {
   margin-inline: auto;
-  width: min(100%, 860px);
+  width: min(100%, 1160px);
 }
 
 .interviewSetupPanel {
@@ -2549,8 +2661,17 @@ button.secondaryButton {
   box-shadow:
     0 28px 90px rgba(0, 0, 0, 0.32),
     0 0 0 1px rgba(124, 223, 216, 0.04) inset;
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1fr 1.35fr;
   overflow: hidden;
   position: static;
+}
+
+@media (max-width: 1024px) {
+  .interviewDetailsPanel {
+    grid-template-columns: 1fr;
+  }
 }
 
 .interviewSetupIntro {
@@ -2580,8 +2701,8 @@ button.secondaryButton {
 
 .interviewSessionActions {
   display: grid;
-  gap: 10px;
-  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  grid-template-columns: 1fr;
 }
 
 .interviewWizard {
@@ -2645,7 +2766,14 @@ button.secondaryButton {
 
 .wizardOptionGrid {
   display: grid;
-  gap: 10px;
+  gap: 12px;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 768px) {
+  .wizardOptionGrid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .wizardOption {
@@ -2675,8 +2803,8 @@ button.secondaryButton {
 
 .wizardNavActions {
   display: grid;
-  gap: 10px;
-  grid-template-columns: 0.7fr 1fr;
+  gap: 12px;
+  grid-template-columns: 1fr;
 }
 
 .compactWizardStep {
@@ -2705,22 +2833,15 @@ button.secondaryButton {
 }
 
 .interviewModal {
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.085), rgba(255, 255, 255, 0.035)),
-    #070a0f;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 8px;
-  box-shadow: 0 34px 120px rgba(0, 0, 0, 0.58);
-  display: grid;
-  gap: 12px;
-  grid-template-rows: auto minmax(0, 1fr);
-  height: min(920px, calc(100vh - 32px));
-  max-height: min(920px, calc(100vh - 32px));
-  max-width: 1280px;
-  overflow: hidden;
-  padding: clamp(12px, 2vw, 18px);
-  position: relative;
-  width: min(100%, 1280px);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
 }
 
 .interviewModalHeader {
@@ -2973,50 +3094,46 @@ button.sideActionButton.secondaryButton {
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 12px;
-  max-height: 430px;
+  gap: 16px;
+  padding: 24px;
   overflow-y: auto;
-  padding: 2px 6px 8px 0;
 }
 
 .conversationBubble {
-  background:
-    linear-gradient(135deg, rgba(255, 122, 144, 0.1), rgba(255, 255, 255, 0.035)),
-    rgba(255, 255, 255, 0.045);
-  border: 1px solid rgba(255, 122, 144, 0.18);
-  border-radius: 8px;
-  max-width: 82%;
-  padding: 11px 12px;
-}
-
-.conversationBubble span,
-.liveFeedbackBox span {
-  color: var(--coral);
-  display: block;
-  font-size: 0.64rem;
-  font-weight: 900;
-  letter-spacing: 0;
-  margin-bottom: 5px;
-  text-transform: uppercase;
-}
-
-.conversationBubble p {
-  color: rgba(255, 255, 255, 0.88);
-  font-size: 0.84rem;
-  line-height: 1.42;
-  margin: 0;
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px 14px 14px 14px;
+  max-width: 80%;
+  padding: 12px 16px;
+  position: relative;
 }
 
 .candidateBubble {
   align-self: flex-end;
-  background:
-    linear-gradient(135deg, rgba(255, 207, 102, 0.1), rgba(124, 223, 216, 0.06)),
-    rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 207, 102, 0.2);
+  background: rgba(124, 223, 216, 0.12);
+  border-radius: 14px 14px 4px 14px;
+}
+
+.conversationBubble span {
+  color: var(--coral);
+  display: block;
+  font-size: 0.62rem;
+  font-weight: 850;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  opacity: 0.8;
 }
 
 .candidateBubble span {
-  color: var(--yellow);
+  color: var(--mint);
+  text-align: right;
+}
+
+.conversationBubble p {
+  color: #ffffff;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  margin: 0;
 }
 
 .emptyConversation {
@@ -3119,24 +3236,93 @@ button.sideActionButton.secondaryButton {
 
 /* Interview modal rebuild */
 .interviewModalShell {
+  background: rgba(10, 14, 20, 0.98);
+  border-radius: 12px;
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.6);
   display: grid;
-  gap: 14px;
-  grid-template-columns: minmax(250px, 290px) minmax(0, 1fr);
-  height: 100%;
+  height: min(90vh, 860px);
+  margin-top: 20px;
+  overflow: hidden;
+  position: relative;
+  width: min(95vw, 1280px);
+}
+
+.roomLayoutRedesign {
+  display: flex;
+  flex-direction: column;
+  height: 92vh;
+  margin-top: 0;
+  width: min(98vw, 1400px);
+}
+
+.interviewRoomHeader {
+  align-items: center;
+  background: rgba(18, 24, 34, 0.98);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  justify-content: space-between;
+  padding: 18px 32px;
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 100;
+}
+
+.roomHeaderLeft h2 {
+  color: #ffffff;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.2rem;
+  margin: 4px 0;
+}
+
+.roomHeaderLeft p {
+  color: var(--muted);
+  font-size: 0.82rem;
+  margin: 0;
+  opacity: 0.8;
+}
+
+.roomHeaderRight {
+  display: flex;
+  gap: 10px;
+}
+
+.interviewRoomBody {
+  display: grid;
+  flex: 1;
+  gap: 0;
+  grid-template-columns: 280px 1fr;
   min-height: 0;
 }
 
-.interviewSidebar {
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035)),
-    rgba(4, 7, 11, 0.72);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  display: grid;
-  gap: 12px;
-  grid-template-rows: auto auto auto 1fr;
-  min-height: 0;
-  padding: 14px;
+.interviewAvatarSection {
+  background: rgba(255, 255, 255, 0.015);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 24px;
+}
+
+@media (max-width: 900px) {
+  .roomLayoutRedesign {
+    height: 100vh;
+    width: 100vw;
+  }
+
+  .interviewRoomHeader {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  .interviewRoomBody {
+    grid-template-columns: 1fr;
+  }
+
+  .interviewAvatarSection {
+    border-right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 12px;
+  }
 }
 
 .interviewSidebarTop h2 {
@@ -3154,35 +3340,58 @@ button.sideActionButton.secondaryButton {
 }
 
 .interviewerCard {
-  align-items: start;
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.02)),
-    rgba(255, 255, 255, 0.02);
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  display: grid;
-  gap: 10px;
-  justify-items: start;
-  padding: 12px;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 28px 16px;
+  text-align: center;
+  transition: all 0.45s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.interviewerCard.speaking {
+  background: rgba(124, 223, 216, 0.07);
+  border-color: rgba(124, 223, 216, 0.35);
+  box-shadow: 0 0 50px rgba(124, 223, 216, 0.12);
+  transform: scale(1.02);
+}
+
+.interviewerCard.listening {
+  background: rgba(255, 122, 144, 0.07);
+  border-color: rgba(255, 122, 144, 0.35);
+  box-shadow: 0 0 50px rgba(255, 122, 144, 0.12);
+  transform: scale(1.02);
 }
 
 .interviewerCard h3 {
   color: #ffffff;
-  font-family: var(--font-display), var(--font-body), sans-serif;
-  font-size: 0.94rem;
-  margin: 6px 0 4px;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+  margin: 0 0 4px;
 }
 
 .interviewerCard p {
   color: var(--muted);
-  font-size: 0.82rem;
-  line-height: 1.4;
+  font-size: 0.86rem;
+  line-height: 1.5;
   margin: 0;
+  opacity: 0.85;
 }
-
 .sidebarMetaList {
   display: grid;
   gap: 8px;
+  margin-top: auto;
+}
+
+.sidebarMetaList span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  opacity: 0.7;
 }
 
 .sidebarMetaList span {
@@ -3196,9 +3405,9 @@ button.sideActionButton.secondaryButton {
 }
 
 .sidebarControls {
-  align-content: end;
   display: grid;
-  gap: 8px;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .compactSideButton,
@@ -3269,25 +3478,65 @@ button.compactSideButton.secondaryButton {
 }
 
 .workspaceComposer {
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.035)),
-    rgba(7, 10, 15, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.11);
-  border-radius: 8px;
+  background: rgba(15, 20, 28, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
   display: grid;
-  gap: 8px;
-  margin-top: 12px;
-  padding: 10px;
+  gap: 12px;
+  margin-top: auto;
+  padding: 16px;
+  position: relative;
+  z-index: 5;
 }
 
-.workspaceComposer .liveAnswerBox {
-  margin-top: 0;
+.workspaceScroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0;
+  position: relative;
+}
+
+.conversationBubble {
+  animation: bubbleFadeIn 0.35s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+@keyframes bubbleFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.micActionButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.micActionButton svg {
+  opacity: 0.8;
+}
+
+.activeMic {
+  background: rgba(255, 122, 144, 0.15) !important;
+  border-color: rgba(255, 122, 144, 0.4) !important;
+  color: #ff7a90 !important;
+  animation: micPulse 1.5s infinite ease-in-out;
+}
+
+@keyframes micPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(0.98); }
 }
 
 .workspaceComposer textarea {
   font-size: 0.94rem;
   line-height: 1.5;
-  min-height: 64px;
+  min-height: 80px;
   resize: vertical;
 }
 
@@ -4729,7 +4978,7 @@ button.compactSideButton.secondaryButton {
 }
 
 .adminEntityTop {
-  align-items: start;
+  align-items: flex-start;
   display: flex;
   gap: 14px;
   justify-content: space-between;
@@ -4920,7 +5169,7 @@ button.compactSideButton.secondaryButton {
 }
 
 .adminModalHeader {
-  align-items: start;
+  align-items: flex-start;
   display: flex;
   gap: 16px;
   justify-content: space-between;
@@ -5849,7 +6098,7 @@ button:disabled {
 }
 
 .homeHero {
-  align-items: end;
+  align-items: flex-start;
   --network-cursor-x: 50%;
   --network-cursor-y: 38%;
   --network-shift-x: 0px;
@@ -5860,12 +6109,12 @@ button:disabled {
   justify-items: center;
   margin-top: calc(var(--page-top-offset) * -1);
   max-width: none;
-  min-height: min(72vh, 860px);
+  min-height: 100vh;
   overflow: hidden;
   padding-bottom: 10px;
   padding-left: 0;
   padding-right: 0;
-  padding-top: calc(clamp(36px, 7vw, 86px) + var(--page-top-offset));
+  padding-top: calc(clamp(80px, 10vw, 130px) + var(--page-top-offset));
   position: relative;
 }
 
@@ -5878,37 +6127,131 @@ button:disabled {
 }
 
 .homeHeroBackdrop {
-  background:
-    radial-gradient(circle at 18% 24%, rgba(69, 224, 168, 0.12), transparent 18rem),
-    radial-gradient(circle at 82% 18%, rgba(84, 183, 255, 0.1), transparent 20rem),
-    radial-gradient(circle at 52% 76%, rgba(255, 184, 107, 0.06), transparent 18rem),
-    linear-gradient(180deg, rgba(7, 11, 18, 0.98), rgba(4, 8, 14, 1));
+  background: #04070c;
   overflow: hidden;
 }
 
-.homeHeroBackdrop::before,
-.homeHeroBackdrop::after {
-  content: "";
+.homeHeroAmbient {
+  inset: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: 1;
+}
+
+.homeOrb {
+  filter: blur(100px);
+  opacity: 0.06;
+  pointer-events: none;
   position: absolute;
 }
 
-.homeHeroBackdrop::before {
-  animation: homeNetworkFloat 18s ease-in-out infinite alternate;
-  background:
-    radial-gradient(circle at 24% 28%, rgba(84, 183, 255, 0.18), transparent 0 16rem),
-    radial-gradient(circle at 74% 32%, rgba(69, 224, 168, 0.16), transparent 0 18rem),
-    radial-gradient(circle at 48% 74%, rgba(255, 184, 107, 0.08), transparent 0 14rem);
-  filter: blur(12px);
-  inset: 0;
-  opacity: 0.78;
+.homeOrbOne {
+  animation: homeOrbMoveOne 22s ease-in-out infinite alternate;
+  background: radial-gradient(circle at center, rgba(59, 130, 246, 0.35), transparent 70%);
+  height: 65vh;
+  left: -15%;
+  top: -10%;
+  width: 65vh;
 }
 
-.homeHeroBackdrop::after {
-  background:
-    radial-gradient(circle at 50% 42%, rgba(84, 183, 255, 0.08), transparent 34%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 28%, transparent 72%, rgba(255, 255, 255, 0.015));
+.homeOrbTwo {
+  animation: homeOrbMoveTwo 28s ease-in-out infinite alternate;
+  background: radial-gradient(circle at center, rgba(45, 212, 191, 0.28), transparent 70%);
+  bottom: -15%;
+  height: 55vh;
+  right: -10%;
+  width: 55vh;
+}
+
+.homeOrbThree {
+  animation: homeOrbMoveThree 34s ease-in-out infinite alternate;
+  background: radial-gradient(circle at center, rgba(168, 85, 247, 0.2), transparent 70%);
+  height: 50vh;
+  left: 25%;
+  top: 15%;
+  width: 50vh;
+}
+
+@keyframes homeOrbMoveOne {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(120px, 60px) scale(1.15); }
+}
+
+@keyframes homeOrbMoveTwo {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-100px, -80px) scale(1.1); }
+}
+
+@keyframes homeOrbMoveThree {
+  0% { transform: translate(0, 0) scale(1.05); }
+  100% { transform: translate(60px, -40px) scale(0.95); }
+}
+
+.homeHeroDots {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1.5px, transparent 1.5px);
+  background-size: 32px 32px;
   inset: 0;
-  opacity: 0.48;
+  mask-image: radial-gradient(circle at center, black 10%, transparent 85%);
+  opacity: 0.05;
+  pointer-events: none;
+  position: absolute;
+  z-index: 2;
+  transform: 
+    perspective(1200px) 
+    rotateX(calc(var(--network-tilt-x) * 0.4)) 
+    rotateY(calc(var(--network-tilt-y) * 0.4))
+    translateZ(0);
+  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.pixelCorner {
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 3;
+}
+
+.pixelCornerLeft {
+  left: 0;
+  mask-image: radial-gradient(circle at bottom left, black 5%, transparent 35%);
+}
+
+.pixelCornerRight {
+  right: 0;
+  mask-image: radial-gradient(circle at bottom right, black 5%, transparent 35%);
+}
+
+.pixelCorner::before {
+  background-image: 
+    radial-gradient(circle at center, rgba(69, 224, 168, 0.25), transparent 45%),
+    linear-gradient(rgba(69, 224, 168, 0.1) 12px, transparent 12px),
+    linear-gradient(90deg, rgba(69, 224, 168, 0.1) 12px, transparent 12px);
+  background-size: 300% 300%, 14px 14px, 14px 14px;
+  background-position: 0% 0%, 0 0, 0 0;
+  content: "";
+  inset: 0;
+  position: absolute;
+  animation: cornerGlowSweep 12s infinite alternate ease-in-out;
+  transform: 
+    perspective(1200px) 
+    rotateX(calc(var(--network-tilt-x) * 0.6)) 
+    rotateY(calc(var(--network-tilt-y) * 0.6))
+    translateZ(0);
+  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.pixelCornerRight::before {
+  background-image: 
+    radial-gradient(circle at center, rgba(84, 183, 255, 0.2), transparent 45%),
+    linear-gradient(rgba(84, 183, 255, 0.08) 12px, transparent 12px),
+    linear-gradient(90deg, rgba(84, 183, 255, 0.08) 12px, transparent 12px);
+  animation-delay: -6s;
+}
+
+@keyframes cornerGlowSweep {
+  0% { background-position: 0% 0%, 0 0, 0 0; }
+  50% { background-position: 100% 100%, 0 0, 0 0; }
+  100% { background-position: 0% 100%, 0 0, 0 0; }
 }
 
 .homeHeroShade {
@@ -5917,119 +6260,61 @@ button:disabled {
     linear-gradient(90deg, rgba(6, 11, 17, 0.5), rgba(6, 11, 17, 0.08) 40%, rgba(6, 11, 17, 0.58));
 }
 
-.homeHeroNetwork {
-  mask-image: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.94) 14%, rgba(0, 0, 0, 0.94) 86%, transparent 100%);
-  overflow: hidden;
-  transform:
-    perspective(1200px)
-    rotateX(var(--network-tilt-x))
-    rotateY(var(--network-tilt-y));
-  transform-style: preserve-3d;
-  transition: transform 180ms ease;
+.homeHeroHighlight {
+  background: linear-gradient(135deg, #4ade80, #3b82f6, #2dd4bf);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  background-size: 200% auto;
+  animation: homeHeroHighlightFlow 6s linear infinite;
+  font-weight: 900;
+  position: relative;
 }
 
-.homeHeroNetwork::before {
-  animation: homeNetworkFloat 20s ease-in-out infinite alternate;
-  background:
-    radial-gradient(circle at 18% 18%, rgba(84, 183, 255, 0.12), transparent 0 12rem),
-    radial-gradient(circle at 82% 64%, rgba(69, 224, 168, 0.12), transparent 0 13rem);
-  content: "";
-  inset: 0;
-  opacity: 0.7;
-  position: absolute;
-  transform: translate3d(calc(var(--network-shift-x) * -0.16), calc(var(--network-shift-y) * -0.16), 0);
-  transition: transform 180ms ease;
+@keyframes homeHeroHighlightFlow {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
 }
 
-.homeHeroNetwork::after {
-  background:
-    radial-gradient(
-      circle at var(--network-cursor-x) var(--network-cursor-y),
-      rgba(84, 183, 255, 0.2),
-      rgba(69, 224, 168, 0.12) 11%,
-      rgba(69, 224, 168, 0.04) 18%,
-      transparent 28%
-    );
-  content: "";
-  inset: 0;
-  mix-blend-mode: screen;
-  opacity: 0.92;
-  position: absolute;
-}
-
-.homeNetworkLink {
-  background: linear-gradient(90deg, rgba(132, 153, 180, 0.08), rgba(132, 153, 180, 0.28), rgba(132, 153, 180, 0.08));
-  border-radius: 999px;
-  height: 2px;
-  opacity: 0.72;
-  position: absolute;
-  transform:
-    translate3d(
-      calc(var(--network-shift-x) * var(--link-depth, 0.5)),
-      calc(var(--network-shift-y) * var(--link-depth, 0.5)),
-      0
-    )
-    rotate(var(--link-angle, 0deg));
-  transform-origin: left center;
-  transition: transform 180ms ease, opacity 180ms ease;
-}
-
-.homeNetworkLinkBeam {
-  animation: homeNetworkBeam 6.2s linear infinite;
-  background: linear-gradient(90deg, transparent 0%, rgba(84, 183, 255, 0.08) 18%, rgba(84, 183, 255, 0.96) 48%, rgba(69, 224, 168, 0.9) 62%, transparent 100%);
-  border-radius: 999px;
-  box-shadow:
-    0 0 18px rgba(84, 183, 255, 0.34),
-    0 0 26px rgba(69, 224, 168, 0.2);
-  inset: 0;
-  opacity: 0;
-  position: absolute;
-  transform-origin: left center;
-}
-
-.homeNetworkNode {
-  animation: homeNetworkNodePulse 5.6s ease-in-out infinite;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.98) 0%, rgba(84, 183, 255, 0.95) 42%, rgba(69, 224, 168, 0.34) 72%, transparent 100%);
-  border-radius: 999px;
-  box-shadow:
-    0 0 10px rgba(255, 255, 255, 0.16),
-    0 0 18px rgba(84, 183, 255, 0.26),
-    0 0 26px rgba(69, 224, 168, 0.16);
-  position: absolute;
-  transform:
-    translate(
-      calc(-50% + (var(--network-shift-x) * var(--node-depth, 0.6))),
-      calc(-50% + (var(--network-shift-y) * var(--node-depth, 0.6)))
-    );
-  transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
-}
 
 .homeHeroGrid {
   display: grid;
   gap: 28px;
   justify-self: center;
   margin: 0 auto;
-  max-width: 1120px;
+  max-width: 1600px;
   padding-left: clamp(18px, 5vw, 72px);
   padding-right: clamp(18px, 5vw, 72px);
   position: relative;
   text-align: center;
-  width: min(100%, 1120px);
+  width: min(100%, 1600px);
   z-index: 1;
 }
 
 .homeHeroCopy {
   margin: 0 auto;
-  max-width: 980px;
+  max-width: 100%;
   position: relative;
   width: 100%;
 }
 
 .homeHeroCopy h1 {
-  font-size: clamp(3rem, 7vw, 6.3rem);
-  line-height: 0.91;
+  font-family: var(--font-lexend), sans-serif;
+  font-size: clamp(2.8rem, 7.6vw, 9.5rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
   margin: 0 auto;
-  max-width: 15.5ch;
+  max-width: 100%;
+}
+
+.homeHeroHighlight {
+  background: linear-gradient(90deg, #3b82f6, #06b6d4);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  display: inline;
 }
 
 .homeHeroCopy p:not(.eyebrow) {
@@ -6226,7 +6511,7 @@ button:disabled {
 }
 
 .homeJourneyRail article {
-  align-items: start;
+  align-items: flex-start;
   display: grid;
   gap: 14px;
   grid-template-columns: auto minmax(0, 1fr);
@@ -6242,11 +6527,28 @@ button:disabled {
   padding-top: 2px;
 }
 
+.journeyCta {
+  align-items: center;
+  color: var(--accent);
+  display: inline-flex;
+  font-size: 0.86rem;
+  font-weight: 800;
+  gap: 5px;
+  margin-top: 12px;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+}
+
+.journeyCta:hover {
+  transform: translateX(4px);
+}
+
 .homeShowcase {
   align-items: stretch;
   display: grid;
-  gap: 16px;
-  grid-template-columns: minmax(320px, 0.95fr) minmax(0, 1fr);
+  gap: 24px;
+  grid-template-columns: 1fr;
+  padding: 40px 0;
 }
 
 .homeShowcaseMedia {
@@ -6264,13 +6566,24 @@ button:disabled {
 
 .homeShowcasePanels {
   display: grid;
-  gap: 16px;
+  gap: 24px;
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .homePanel {
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
   display: grid;
-  gap: 18px;
-  padding: 24px;
+  gap: 20px;
+  padding: 36px;
+  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), border-color 0.3s ease;
+}
+
+.homePanel:hover {
+  background: rgba(255, 255, 255, 0.045);
+  border-color: rgba(69, 224, 168, 0.2);
+  transform: translateY(-6px);
 }
 
 .homeTrackList,
@@ -6284,6 +6597,31 @@ button:disabled {
   display: grid;
   gap: 6px;
   padding: 14px 16px;
+}
+
+.trackCta,
+.eventCta {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: #fff;
+  display: inline-flex;
+  font-size: 0.82rem;
+  font-weight: 800;
+  justify-content: center;
+  margin-top: 10px;
+  padding: 7px 14px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  width: fit-content;
+}
+
+.trackCta:hover,
+.eventCta:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
 }
 
 .homeClosing {
@@ -6553,9 +6891,35 @@ button:disabled {
   .toolPanel,
   .calendarShell,
   .adminShell,
-  .interviewModalGrid,
-  .liveInterviewPanel {
+  .interviewModalShell {
     grid-template-columns: 1fr;
+    height: 100vh;
+    margin-top: 0;
+    width: 100vw;
+    border-radius: 0;
+  }
+
+  .interviewSidebar {
+    border-right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    height: auto;
+    padding: 16px;
+  }
+
+  .sidebarMetaList {
+    display: none;
+  }
+
+  .sidebarControls {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .compactSideButton {
+    flex: 1;
+    font-size: 0.75rem;
+    padding: 8px;
   }
 
   .interviewSetupPanel {
@@ -6734,17 +7098,57 @@ button:disabled {
   }
 
   .nav {
-    align-items: center;
-    display: inline-flex;
-    max-width: 100%;
-    width: fit-content;
+    display: none !important;
   }
 
-  .menuLinks {
-    justify-self: auto;
-    overflow-x: auto;
-    justify-content: flex-start;
-    max-width: 100%;
+  .desktopBrand,
+  .navSeparator {
+    display: none;
+  }
+
+  .siteHeader {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    padding: 10px 16px;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 16px;
+    background: transparent;
+    border: 1px solid transparent;
+    transition: all 0.35s ease;
+  }
+
+  .siteHeader.scrolled,
+  .siteHeader:not(.onHome) {
+    background: rgba(18, 24, 34, 0.85);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  .mobileBrand {
+    display: block;
+    position: static;
+    color: #fff;
+    font-family: var(--font-display), sans-serif;
+    font-weight: 850;
+    font-size: 1.15rem;
+    letter-spacing: -0.02em;
+    z-index: 101;
+  }
+
+  .menuToggle {
+    display: flex;
+    position: static;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    z-index: 101;
   }
 
   .menuLinks a {
@@ -7127,5 +7531,9 @@ button:disabled {
   .pageHero img,
   .heroProduct {
     justify-self: start;
+  }
+
+  .homeShowcasePanels {
+    grid-template-columns: 1fr;
   }
 }

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Inter, Space_Grotesk, Lexend_Deca } from "next/font/google";
 import { AppShell } from "./components/AppShell";
 import "./globals.css";
 
@@ -13,8 +13,13 @@ const spaceGrotesk = Space_Grotesk({
   variable: "--font-display",
 });
 
+const lexendDeca = Lexend_Deca({
+  subsets: ["latin"],
+  variable: "--font-lexend",
+});
+
 export const metadata: Metadata = {
-  title: "Programming Pathshala Club",
+  title: "Gyansutra AI",
   description: "A learning portal for builders, coders, and curious problem solvers.",
 };
 
@@ -24,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable}`}>
+    <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable} ${lexendDeca.variable}`}>
       <body>
         <AppShell>{children}</AppShell>
       </body>

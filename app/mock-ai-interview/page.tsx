@@ -18,14 +18,14 @@ export default function MockAiInterviewPage() {
         </div>
       </section>
 
-      <section className="interviewPracticeStrip" aria-label="Practice flow">
+      {/* <section className="interviewPracticeStrip" aria-label="Practice flow">
         {["Details first", "Focused room", "Voice answers", "AI coaching"].map((item, index) => (
           <article key={item}>
             <span>{index + 1}</span>
             <strong>{item}</strong>
           </article>
         ))}
-      </section>
+      </section> */}
 
       <MockInterviewTool />
     </main>

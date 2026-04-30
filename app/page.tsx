@@ -15,7 +15,7 @@ type PortalData = {
 };
 
 const fallbackData: PortalData = {
-  club_name: "Programming Pathshala Club",
+  club_name: "Gyansutra AI",
   tagline: "Jobs, resumes, interviews, events, and classes in one student workspace.",
   tracks: [
     {
@@ -42,7 +42,7 @@ const fallbackData: PortalData = {
 
 async function getPortalData(): Promise<PortalData> {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8001"}/api/portal`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8000"}/api/portal`, {
       cache: "no-store",
     });
 

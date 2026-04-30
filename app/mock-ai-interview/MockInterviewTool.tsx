@@ -483,103 +483,107 @@ export function MockInterviewTool() {
 
       {isInterviewOpen ? (
         <div className="interviewModalBackdrop" role="dialog" aria-modal="true" aria-label="Live mock interview">
-          <div className="interviewModal">
-            <div className="interviewModalShell">
-              <aside className="interviewSidebar">
-                <div className="interviewSidebarTop">
-                  <span className="dashboardBadge">Live interview</span>
-                  <h2>{role}</h2>
-                  <p>
-                    {difficulty} difficulty - {roundType} round - Question {turn || 1}/{maxTurns}
-                  </p>
-                </div>
-
-                <div className={`interviewerCard ${isSpeaking ? "speaking" : ""} ${isListening ? "listening" : ""}`}>
-                  <div className="cornerAvatar" aria-hidden="true">
-                    <div className="avatarStage">
-                      <div className="avatarHalo" />
-                      <div className="humanAvatar">
-                        <span className="avatarHair" />
-                        <div className="humanFace">
-                          <span className="avatarBrow leftBrow" />
-                          <span className="avatarBrow rightBrow" />
-                          <span className="avatarEye" />
-                          <span className="avatarEye" />
-                          <span className="avatarNose" />
-                          <span className="avatarMouth" />
-                        </div>
-                        <span className="avatarNeck" />
-                        <span className="avatarShirt" />
-                        <span className="avatarMic" />
-                      </div>
-                    </div>
+            <div className="interviewModal">
+              <div className="interviewModalShell roomLayoutRedesign">
+                <header className="interviewRoomHeader">
+                  <div className="roomHeaderLeft">
+                    <span className="dashboardBadge">Live Interview</span>
+                    <h2>{role}</h2>
+                    <p>{difficulty} • {roundType} • Q{turn || 1}/{maxTurns}</p>
                   </div>
-                  <div>
-                    <span className="dashboardBadge">Interviewer</span>
-                    <h3>{isListening ? "Listening now" : isSpeaking ? "Speaking now" : "Ready"}</h3>
-                    <p>{activeQuestion || "Use the controls or finish the interview when you are done."}</p>
-                  </div>
-                </div>
-
-                <div className="sidebarMetaList">
-                  <span>{provider === "ollama" ? "Local AI active" : "Fallback interviewer"}</span>
-                  <span>{conversation.length} messages</span>
-                  <span>{skillPreview(skills)}</span>
-                </div>
-
-                <div className="sidebarControls">
-                  <button className="secondaryButton compactSideButton" type="button" onClick={() => speak()} disabled={!activeQuestion}>
-                    Repeat question
-                  </button>
-                  <button className="secondaryButton compactSideButton" type="button" onClick={isListening ? stopListening : startListening}>
-                    {isListening ? "Stop voice capture" : "Speak answer"}
-                  </button>
-                  <button className="secondaryButton compactSideButton finishSideButton" type="button" onClick={finishInterview} disabled={isBusy}>
-                    Finish interview
-                  </button>
-                </div>
-              </aside>
-
-              <section className="interviewWorkspace">
-                <div className="workspaceHeader">
-                  <div>
-                    <span className="dashboardBadge">Transcript</span>
-                    <h3>{isListening ? "Listening now" : activeQuestion ? "Question in progress" : "Ready to finish"}</h3>
-                  </div>
-                  <small>{conversation.length} messages</small>
-                </div>
-
-                <div className="workspaceScroll" aria-live="polite">
-                  <div className="conversationStream">
-                    {conversation.map((item) => (
-                      <article className={`conversationBubble ${item.speaker === "Candidate" ? "candidateBubble" : ""}`} key={item.id}>
-                        <span>{item.speaker}</span>
-                        <p>{item.text}</p>
-                      </article>
-                    ))}
-                  </div>
-
-                </div>
-
-                <div className="workspaceComposer">
-                  <label className="liveAnswerBox">
-                    <span>Your answer</span>
-                    <textarea
-                      rows={3}
-                      value={answer}
-                      onChange={(event) => setAnswer(event.target.value)}
-                      placeholder="Speak or type your answer here..."
-                    />
-                  </label>
-                  <div className="answerActions">
-                    <button className="primaryButton" type="button" onClick={sendAnswer} disabled={!sessionId || isBusy}>
-                      Submit answer
+                  
+                  <div className="roomHeaderRight">
+                    <button className="secondaryButton compactSideButton" type="button" onClick={() => speak()} disabled={!activeQuestion}>
+                      Repeat
+                    </button>
+                    <button className="secondaryButton compactSideButton finishSideButton" type="button" onClick={finishInterview} disabled={isBusy}>
+                      Finish
                     </button>
                   </div>
-                </div>
-              </section>
+                </header>
+
+                <main className="interviewRoomBody">
+                  <aside className="interviewAvatarSection">
+                    <div className={`interviewerCard ${isSpeaking ? "speaking" : ""} ${isListening ? "listening" : ""}`}>
+                      <div className="cornerAvatar" aria-hidden="true">
+                        <div className="avatarStage">
+                          <div className="avatarHalo" />
+                          <div className="humanAvatar">
+                            <span className="avatarHair" />
+                            <div className="humanFace">
+                              <span className="avatarBrow leftBrow" />
+                              <span className="avatarBrow rightBrow" />
+                              <span className="avatarEye" />
+                              <span className="avatarEye" />
+                              <span className="avatarNose" />
+                              <span className="avatarMouth" />
+                            </div>
+                            <span className="avatarNeck" />
+                            <span className="avatarShirt" />
+                            <span className="avatarMic" />
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <span className="dashboardBadge">Interviewer</span>
+                        <h3>{isListening ? "Listening..." : isSpeaking ? "Speaking..." : "Ready"}</h3>
+                      </div>
+                    </div>
+                  </aside>
+
+                  <section className="interviewWorkspace">
+                    <div className="workspaceHeader">
+                      <div>
+                        <span className="dashboardBadge">Transcript</span>
+                        <h3>{isListening ? "Listening" : activeQuestion ? "In progress" : "Ready"}</h3>
+                      </div>
+                      <small>{conversation.length} messages</small>
+                    </div>
+
+                    <div className="workspaceScroll" aria-live="polite">
+                      <div className="conversationStream">
+                        {conversation.map((item) => (
+                          <article className={`conversationBubble ${item.speaker === "Candidate" ? "candidateBubble" : ""}`} key={item.id}>
+                            <span>{item.speaker}</span>
+                            <p>{item.text}</p>
+                          </article>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="workspaceComposer">
+                      <label className="liveAnswerBox">
+                        <span>Your answer</span>
+                        <textarea
+                          rows={2}
+                          value={answer}
+                          onChange={(event) => setAnswer(event.target.value)}
+                          placeholder="Speak or type your answer here..."
+                        />
+                      </label>
+                      <div className="answerActions">
+                        <button 
+                          className={`secondaryButton micActionButton ${isListening ? "activeMic" : ""}`} 
+                          type="button" 
+                          onClick={isListening ? stopListening : startListening}
+                        >
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                            <line x1="12" y1="19" x2="12" y2="23"/>
+                            <line x1="8" y1="23" x2="16" y2="23"/>
+                          </svg>
+                          {isListening ? "Listening..." : "Speak"}
+                        </button>
+                        <button className="primaryButton" type="button" onClick={sendAnswer} disabled={!sessionId || isBusy}>
+                          Submit answer
+                        </button>
+                      </div>
+                    </div>
+                  </section>
+                </main>
+              </div>
             </div>
-          </div>
         </div>
       ) : null}
     </section>

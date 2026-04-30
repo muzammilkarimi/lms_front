@@ -7,7 +7,7 @@ export function SiteFooter() {
     <footer className="siteFooter">
       <div className="footerGrid">
         <div>
-          <h2>Programming Pathshala Club</h2>
+          <h2>Gyansutra AI</h2>
           <p>Code together, learn in public, and keep shipping useful things.</p>
         </div>
         <div>
@@ -40,7 +40,7 @@ export function SiteFooter() {
           <p>Saturday code jam starts at 10:00 AM.</p>
         </div>
       </div>
-      <p className="footerBottom">&copy; 2026 Programming Pathshala Club. Keep building.</p>
+      <p className="footerBottom">&copy; 2026 Gyansutra AI. Keep building.</p>
     </footer>
   );
 }
