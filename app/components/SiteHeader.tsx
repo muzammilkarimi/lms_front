@@ -10,9 +10,10 @@ export const menuItems = [
   { label: "Home", href: "/" },
   { label: "Jobs", href: "/jobs" },
   { label: "Events", href: "/events" },
+  { label: "Resources", href: "/resources" },
+  { label: "Alumni", href: "/alumni" },
   { label: "Resume", href: "/resume-builder" },
   { label: "AI Interview", href: "/mock-ai-interview" },
-  { label: "Classes", href: "/classes" },
 ];
 
 export function SiteHeader() {
