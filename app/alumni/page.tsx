@@ -68,7 +68,6 @@ const alumniData: Alumnus[] = [
 
 export default function AlumniPage() {
   const [query, setQuery] = useState("");
-  const [activeTab, setActiveTab] = useState<"directory" | "mentorship">("directory");
 
   const filteredAlumni = useMemo(() => {
     const s = query.toLowerCase();

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { API_BASE_URL } from "../lib/api";
 import { studentAuthHeaders } from "../lib/studentAuth";
 
@@ -26,7 +26,7 @@ type ConversationItem = {
 };
 
 type Difficulty = "beginner" | "intermediate" | "advanced";
-type SetupStep = 1 | 2 | 3 | 4 | 5;
+type SetupStep = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
 type BrowserSpeechRecognition = {
   continuous: boolean;
@@ -70,6 +70,7 @@ function skillPreview(value: string) {
 
 export function MockInterviewTool() {
   const recognitionRef = useRef<BrowserSpeechRecognition | null>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
   const [skills, setSkills] = useState("React, TypeScript, SQL");
   const [role, setRole] = useState("Frontend Developer");
   const [difficulty, setDifficulty] = useState<Difficulty>("intermediate");
@@ -89,6 +90,65 @@ export function MockInterviewTool() {
   const [isListening, setIsListening] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
   const [isInterviewOpen, setIsInterviewOpen] = useState(false);
+  const [isResultOpen, setIsResultOpen] = useState(false);
+  const [persona, setPersona] = useState<"technical_expert" | "friendly_recruiter" | "tough_manager">("friendly_recruiter");
+  const [resumeText, setResumeText] = useState("");
+  const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [selectedVoiceName, setSelectedVoiceName] = useState("");
+  const [startTime, setStartTime] = useState<number | null>(null);
+  const [elapsed, setElapsed] = useState(0);
+  
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isInterviewOpen && startTime) {
+      interval = setInterval(() => {
+        setElapsed(Math.floor((Date.now() - startTime) / 1000));
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isInterviewOpen, startTime]);
+
+  useEffect(() => {
+    const loadVoices = () => {
+      const voices = window.speechSynthesis.getVoices();
+      const enVoices = voices.filter(v => v.lang.startsWith("en-"));
+      setAvailableVoices(enVoices);
+      
+      // Auto-select best voice if none selected
+      if (!selectedVoiceName && enVoices.length > 0) {
+        const best = enVoices.find(v => v.name.includes("Natural") || v.name.includes("Google") || v.name.includes("Premium")) || enVoices[0];
+        setSelectedVoiceName(best.name);
+      }
+    };
+
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+    loadVoices();
+  }, [selectedVoiceName]);
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/api/students/dashboard`, {
+      headers: studentAuthHeaders(),
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.student) {
+          if (data.student.skills?.length > 0) {
+            setSkills(data.student.skills.join(", "));
+            setResumeText(`Skills: ${data.student.skills.join(", ")}`);
+          }
+          if (data.student.desired_role) {
+            setRole(data.student.desired_role);
+          }
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  function formatTime(seconds: number) {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s.toString().padStart(2, "0")}`;
+  }
 
   function addConversation(speaker: ConversationItem["speaker"], text: string) {
     setConversation((items) => [
@@ -108,9 +168,26 @@ export function MockInterviewTool() {
     }
 
     window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.9;
-    utterance.pitch = 0.92;
+    
+    // Clean text: Strip markdown symbols (*, #, _, etc.) so they aren't spoken literally
+    const cleanText = text
+      .replace(/[*#_~`>]/g, "")
+      .replace(/\[([^\]]+)\]\([^\)]+\)/g, "$1") // Strip links but keep text
+      .trim();
+
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    
+    const voices = window.speechSynthesis.getVoices();
+    const voice = voices.find(v => v.name === selectedVoiceName) || 
+                  voices.find(v => v.name.includes("Natural")) || 
+                  voices.find(v => v.lang.startsWith("en-"));
+    
+    if (voice) {
+      utterance.voice = voice;
+    }
+
+    utterance.rate = 0.88; 
+    utterance.pitch = 1.0;
     utterance.onstart = () => setIsSpeaking(true);
     utterance.onend = () => setIsSpeaking(false);
     utterance.onerror = () => setIsSpeaking(false);
@@ -182,7 +259,7 @@ export function MockInterviewTool() {
       return;
     }
     setMessage("Interview details saved.");
-    setSetupStep((current) => Math.min(current + 1, 5) as SetupStep);
+    setSetupStep((current) => Math.min(current + 1, 7) as SetupStep);
   }
 
   function resetInterviewState() {
@@ -195,11 +272,13 @@ export function MockInterviewTool() {
     setActiveQuestion("");
     setAnswer("");
     setConversation([]);
-    setAnswerCoaching(null);
     setProvider("");
     setIsListening(false);
     setIsSpeaking(false);
     setIsInterviewOpen(false);
+    setIsResultOpen(false);
+    setStartTime(null);
+    setElapsed(0);
   }
 
   async function startInterview() {
@@ -216,7 +295,6 @@ export function MockInterviewTool() {
 
     setIsBusy(true);
     setFeedback(null);
-    setAnswerCoaching(null);
     setConversation([]);
     setAnswer("");
     setMessage("Opening interview room...");
@@ -228,6 +306,8 @@ export function MockInterviewTool() {
         role,
         difficulty,
         round_type: roundType,
+        persona,
+        resume_text: resumeText,
         skills: cleanSkills(skills),
       }),
     });
@@ -243,6 +323,7 @@ export function MockInterviewTool() {
     setProvider(data.provider);
     setActiveQuestion(data.question);
     setIsInterviewOpen(true);
+    setStartTime(Date.now());
     setMessage(data.message);
     addConversation("Interviewer", data.question);
     speak(data.question);
@@ -272,12 +353,16 @@ export function MockInterviewTool() {
     const data = await response.json();
     setIsBusy(false);
     if (!response.ok) {
-      setMessage(data.detail ?? "Could not continue interview.");
+      if (response.status === 404) {
+        setMessage("Session lost due to server update. Please start a new session.");
+        setTimeout(() => resetInterviewState(), 3000);
+      } else {
+        setMessage(data.detail ?? "Could not continue interview.");
+      }
       return;
     }
     setTurn(data.turn);
     setProvider(data.provider ?? provider);
-    setAnswerCoaching(data.answer_coaching ?? null);
     setMessage(data.message);
     if (data.question) {
       setActiveQuestion(data.question);
@@ -316,11 +401,16 @@ export function MockInterviewTool() {
     const data = await response.json();
     setIsBusy(false);
     if (!response.ok) {
-      setMessage(data.detail ?? "Could not finish interview.");
+      if (response.status === 404) {
+        setMessage("Session lost due to server update. Please start a new session.");
+        setTimeout(() => resetInterviewState(), 3000);
+      } else {
+        setMessage(data.detail ?? "Could not finish interview.");
+      }
       return;
     }
     setFeedback(data);
-    resetInterviewState();
+    setIsResultOpen(true);
     setMessage(data.saved ? "Score saved to student dashboard." : "Feedback ready. Login to save future scores.");
   }
 
@@ -438,11 +528,88 @@ export function MockInterviewTool() {
           ) : null}
 
           {setupStep === 5 ? (
+            <div className="wizardStep">
+              <span className="dashboardBadge">Interviewer persona</span>
+              <h3>Choose your interviewer style.</h3>
+              <p>Different personas will test you in different ways.</p>
+              
+              <div className="difficultySelector">
+                <button 
+                  className={persona === "friendly_recruiter" ? "active" : ""} 
+                  onClick={() => setPersona("friendly_recruiter")}
+                >
+                  Friendly Recruiter
+                </button>
+                <button 
+                  className={persona === "technical_expert" ? "active" : ""} 
+                  onClick={() => setPersona("technical_expert")}
+                >
+                  Technical Expert
+                </button>
+                <button 
+                  className={persona === "tough_manager" ? "active" : ""} 
+                  onClick={() => setPersona("tough_manager")}
+                >
+                  Tough Manager
+                </button>
+              </div>
+
+              <div className="wizardActions">
+                <button className="secondaryButton" type="button" onClick={() => setSetupStep(4)}>
+                  Back
+                </button>
+                <button className="primaryButton" type="button" onClick={moveSetupNext}>
+                  Next
+                </button>
+              </div>
+            </div>
+          ) : null}
+
+          {setupStep === 6 ? (
+            <div className="wizardStep">
+              <span className="dashboardBadge">Premium Voice Selection</span>
+              <h3>Pick a clear, professional voice.</h3>
+              <p>Choose the voice that is most understandable for you.</p>
+              
+              <div className="voiceSelectorGrid">
+                {availableVoices.slice(0, 8).map(v => (
+                  <button 
+                    key={v.name}
+                    className={`voiceCard ${selectedVoiceName === v.name ? "active" : ""}`}
+                    onClick={() => setSelectedVoiceName(v.name)}
+                  >
+                    <span>{v.name.replace("Microsoft", "").replace("Google", "").trim()}</span>
+                    <small>{v.lang}</small>
+                  </button>
+                ))}
+              </div>
+
+              <div className="voiceTestAction">
+                <button 
+                  className="secondaryButton" 
+                  onClick={() => speak("Hello! This is how I will sound during your interview. Is this voice clear for you?")}
+                >
+                  🔊 Test Selected Voice
+                </button>
+              </div>
+
+              <div className="wizardActions">
+                <button className="secondaryButton" type="button" onClick={() => setSetupStep(5)}>
+                  Back
+                </button>
+                <button className="primaryButton" type="button" onClick={moveSetupNext}>
+                  Next
+                </button>
+              </div>
+            </div>
+          ) : null}
+
+          {setupStep === 7 ? (
             <div className="wizardStep compactWizardStep">
               <span className="dashboardBadge">Ready</span>
               <h3>Start your interview.</h3>
               <p>
-                {role} - {difficulty} difficulty - {roundType} round - {skillPreview(skills)}
+                {role} • {difficulty} • {persona.replace("_", " ")}
               </p>
               <div className="interviewSessionActions">
                 <button className="secondaryButton" type="button" onClick={() => setSetupStep(1)} disabled={isBusy}>
@@ -457,29 +624,12 @@ export function MockInterviewTool() {
         </div>
 
         <p className="interviewStatus">
-          {provider === "ollama" ? "Ollama local AI active" : provider === "fallback" ? "Fallback mode active" : "Local-first mode"}
+          {provider === "gemini" ? "✨ Gemini Pro AI active" : provider === "ollama" ? "Ollama local AI active" : provider === "fallback" ? "Fallback mode active" : "AI model ready"}
           {" - "}
           {message}
         </p>
       </div>
 
-      {feedback ? (
-        <article className="feedbackBox liveFeedbackBox interviewResultPanel">
-          <div>
-            <span>Interview score</span>
-            <h3>{feedback.score}/10</h3>
-          </div>
-          <p>{feedback.strength}</p>
-          <ul>
-            {feedback.suggestions.map((suggestion) => (
-              <li key={suggestion}>{suggestion}</li>
-            ))}
-          </ul>
-          <p>
-            <strong>Better structure:</strong> {feedback.sample_answer}
-          </p>
-        </article>
-      ) : null}
 
       {isInterviewOpen ? (
         <div className="interviewModalBackdrop" role="dialog" aria-modal="true" aria-label="Live mock interview">
@@ -489,98 +639,208 @@ export function MockInterviewTool() {
                   <div className="roomHeaderLeft">
                     <span className="dashboardBadge">Live Interview</span>
                     <h2>{role}</h2>
-                    <p>{difficulty} • {roundType} • Q{turn || 1}/{maxTurns}</p>
+                    <p>{difficulty} • {roundType} • {formatTime(elapsed)}</p>
+                  </div>
+
+                  <div className="roomHeaderCenter">
+                    <div className="interviewProgressBar">
+                      {Array.from({ length: maxTurns }).map((_, i) => (
+                        <div 
+                          key={i} 
+                          className={`progressSegment ${i + 1 < turn ? "completed" : i + 1 === turn ? "active" : ""}`}
+                        />
+                      ))}
+                    </div>
+                    <small>Question {turn} of {maxTurns}</small>
                   </div>
                   
                   <div className="roomHeaderRight">
-                    <button className="secondaryButton compactSideButton" type="button" onClick={() => speak()} disabled={!activeQuestion}>
-                      Repeat
-                    </button>
-                    <button className="secondaryButton compactSideButton finishSideButton" type="button" onClick={finishInterview} disabled={isBusy}>
-                      Finish
+                    {!isResultOpen && (
+                      <button className="secondaryButton" type="button" onClick={finishInterview} disabled={isBusy}>
+                        Finish Interview
+                      </button>
+                    )}
+                    <button className="iconButton closeRoomButton" type="button" onClick={resetInterviewState} aria-label="Close interview">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                      </svg>
                     </button>
                   </div>
                 </header>
 
-                <main className="interviewRoomBody">
-                  <aside className="interviewAvatarSection">
-                    <div className={`interviewerCard ${isSpeaking ? "speaking" : ""} ${isListening ? "listening" : ""}`}>
-                      <div className="cornerAvatar" aria-hidden="true">
-                        <div className="avatarStage">
-                          <div className="avatarHalo" />
-                          <div className="humanAvatar">
-                            <span className="avatarHair" />
-                            <div className="humanFace">
-                              <span className="avatarBrow leftBrow" />
-                              <span className="avatarBrow rightBrow" />
-                              <span className="avatarEye" />
-                              <span className="avatarEye" />
-                              <span className="avatarNose" />
-                              <span className="avatarMouth" />
-                            </div>
-                            <span className="avatarNeck" />
-                            <span className="avatarShirt" />
-                            <span className="avatarMic" />
+                <main className={`interviewRoomBody ${isResultOpen ? "resultViewActive" : ""}`}>
+                  {isResultOpen && feedback ? (
+                    <section className="interviewResultScreen">
+                      <div className="resultIntro">
+                        <div className="resultScoreCircle">
+                          <svg viewBox="0 0 100 100">
+                            <circle className="scoreBase" cx="50" cy="50" r="45" />
+                            <circle 
+                              className="scoreFill" 
+                              cx="50" cy="50" r="45" 
+                              style={{ 
+                                strokeDashoffset: 283 - (283 * feedback.score) / 10,
+                                stroke: feedback.score >= 8 ? "#7cdfd8" : feedback.score >= 6 ? "#f7d794" : "#f19066"
+                              }}
+                            />
+                          </svg>
+                          <div className="scoreText">
+                            <strong>{feedback.score}</strong>
+                            <span>SCORE</span>
                           </div>
                         </div>
+                        <div className="resultHero">
+                          <span className="performanceBadge">
+                            {feedback.score >= 8 ? "🌟 Outstanding" : feedback.score >= 6 ? "📈 Good Progress" : "🎯 Focus Needed"}
+                          </span>
+                          <h3>Session Performance Report</h3>
+                          <p>Targeting the <strong>{role}</strong> position</p>
+                        </div>
                       </div>
-                      <div>
-                        <span className="dashboardBadge">Interviewer</span>
-                        <h3>{isListening ? "Listening..." : isSpeaking ? "Speaking..." : "Ready"}</h3>
-                      </div>
-                    </div>
-                  </aside>
 
-                  <section className="interviewWorkspace">
-                    <div className="workspaceHeader">
-                      <div>
-                        <span className="dashboardBadge">Transcript</span>
-                        <h3>{isListening ? "Listening" : activeQuestion ? "In progress" : "Ready"}</h3>
-                      </div>
-                      <small>{conversation.length} messages</small>
-                    </div>
+                      <div className="resultDetailsGrid">
+                        <div className="resultBlock strengthBlock">
+                          <header>
+                            <div className="blockIcon">💪</div>
+                            <h4>Key Strengths</h4>
+                          </header>
+                          <p>{feedback.strength}</p>
+                        </div>
 
-                    <div className="workspaceScroll" aria-live="polite">
-                      <div className="conversationStream">
-                        {conversation.map((item) => (
-                          <article className={`conversationBubble ${item.speaker === "Candidate" ? "candidateBubble" : ""}`} key={item.id}>
-                            <span>{item.speaker}</span>
-                            <p>{item.text}</p>
-                          </article>
-                        ))}
-                      </div>
-                    </div>
+                        <div className="resultBlock growthBlock">
+                          <header>
+                            <div className="blockIcon">🚀</div>
+                            <h4>Areas for Growth</h4>
+                          </header>
+                          <ul>
+                            {feedback.suggestions.map((s, i) => (
+                              <li key={i}>{s}</li>
+                            ))}
+                          </ul>
+                        </div>
 
-                    <div className="workspaceComposer">
-                      <label className="liveAnswerBox">
-                        <span>Your answer</span>
-                        <textarea
-                          rows={2}
-                          value={answer}
-                          onChange={(event) => setAnswer(event.target.value)}
-                          placeholder="Speak or type your answer here..."
-                        />
-                      </label>
-                      <div className="answerActions">
-                        <button 
-                          className={`secondaryButton micActionButton ${isListening ? "activeMic" : ""}`} 
-                          type="button" 
-                          onClick={isListening ? stopListening : startListening}
-                        >
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-                            <line x1="12" y1="19" x2="12" y2="23"/>
-                            <line x1="8" y1="23" x2="16" y2="23"/>
-                          </svg>
-                          {isListening ? "Listening..." : "Speak"}
+                        <div className="resultBlock sampleBlock fullWidthBlock">
+                          <header>
+                            <div className="blockIcon">📖</div>
+                            <h4>The "Perfect" Response Structure</h4>
+                          </header>
+                          <div className="sampleAnswerBox">
+                            <p>{feedback.sample_answer}</p>
+                          </div>
+                          <footer className="sampleTip">
+                            💡 <strong>Tip:</strong> Try to incorporate these metrics in your next practice.
+                          </footer>
+                        </div>
+                      </div>
+
+                      <div className="resultActions">
+                        <button className="primaryButton glowButton" onClick={resetInterviewState}>
+                          Start New Practice
                         </button>
-                        <button className="primaryButton" type="button" onClick={sendAnswer} disabled={!sessionId || isBusy}>
-                          Submit answer
+                        <button className="secondaryButton" onClick={() => window.location.href='/student-dashboard'}>
+                          Exit to Dashboard
                         </button>
                       </div>
-                    </div>
-                  </section>
+                    </section>
+                  ) : (
+                    <>
+                      <aside className="interviewAvatarSection">
+                        <div className={`interviewerCard ${isSpeaking ? "speaking" : ""} ${isListening ? "listening" : ""}`}>
+                          <div className="cornerAvatar" aria-hidden="true">
+                            <div className="avatarStage">
+                              <div className="avatarHalo" />
+                              <div className="humanAvatar">
+                                <span className="avatarHair" />
+                                <div className="humanFace">
+                                  <span className="avatarBrow leftBrow" />
+                                  <span className="avatarBrow rightBrow" />
+                                  <span className="avatarEye" />
+                                  <span className="avatarEye" />
+                                  <span className="avatarNose" />
+                                  <span className="avatarMouth" />
+                                </div>
+                                <span className="avatarNeck" />
+                                <span className="avatarShirt" />
+                                <span className="avatarMic" />
+                              </div>
+                            </div>
+                          </div>
+                          <div>
+                            <span className="dashboardBadge">Interviewer</span>
+                            <h3>{isListening ? "Listening..." : isSpeaking ? "Speaking..." : "Ready"}</h3>
+                          </div>
+                          {isListening && (
+                            <div className="listeningWaves">
+                              <span /><span /><span /><span /><span />
+                            </div>
+                          )}
+                        </div>
+                      </aside>
+
+                      <section className="interviewWorkspace">
+                        <div className="workspaceHeader">
+                          <div>
+                            <span className="dashboardBadge">Transcript</span>
+                            <h3>{isListening ? "Listening" : activeQuestion ? "In progress" : "Ready"}</h3>
+                          </div>
+                          <small>{conversation.length} messages</small>
+                        </div>
+
+                        <div className="workspaceScroll" ref={scrollRef} aria-live="polite">
+                          <div className="conversationStream">
+                            {conversation.map((item) => (
+                              <article className={`conversationBubble ${item.speaker === "Candidate" ? "candidateBubble" : ""}`} key={item.id}>
+                                <span>{item.speaker}</span>
+                                <p>{item.text}</p>
+                              </article>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="workspaceComposer">
+                          <label className="liveAnswerBox">
+                            <span>Your answer</span>
+                            <textarea
+                              rows={2}
+                              value={answer}
+                              onChange={(event) => setAnswer(event.target.value)}
+                              onKeyDown={(event) => {
+                                if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+                                  event.preventDefault();
+                                  sendAnswer();
+                                }
+                              }}
+                              placeholder="Speak or type your answer here (Ctrl+Enter to send)..."
+                            />
+                          </label>
+                          <div className="answerActions">
+                            <button 
+                              className={`secondaryButton micActionButton ${isListening ? "activeMic" : ""}`} 
+                              type="button" 
+                              onClick={isListening ? stopListening : startListening}
+                            >
+                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                                <line x1="12" y1="19" x2="12" y2="23"/>
+                                <line x1="8" y1="23" x2="16" y2="23"/>
+                              </svg>
+                              {isListening ? "Listening..." : "Speak"}
+                            </button>
+                            {isListening && (
+                              <div className="composerWaves">
+                                <span /><span /><span /><span /><span />
+                              </div>
+                            )}
+                            <button className="primaryButton" type="button" onClick={sendAnswer} disabled={!sessionId || isBusy}>
+                              Submit answer
+                            </button>
+                          </div>
+                        </div>
+                      </section>
+                    </>
+                  )}
                 </main>
               </div>
             </div>

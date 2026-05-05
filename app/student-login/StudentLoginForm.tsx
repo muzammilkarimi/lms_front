@@ -5,7 +5,7 @@ import { API_BASE_URL } from "../lib/api";
 import { clearStudentToken, getStudentToken, setStudentToken } from "../lib/studentAuth";
 
 export function StudentLoginForm() {
-  const [email, setEmail] = useState("raj@example.com");
+  const [email, setEmail] = useState("student@example.com");
   const [password, setPassword] = useState("student123");
   const [message, setMessage] = useState("Use the demo student or register a new account.");
 
@@ -116,7 +116,7 @@ export function StudentLoginForm() {
         <div className="studentAuthHint">
           <strong>Demo login</strong>
           <span>
-            <code>raj@example.com</code> / <code>student123</code>
+            <code>student@example.com</code> / <code>student123</code>
           </span>
         </div>
 

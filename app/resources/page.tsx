@@ -217,14 +217,17 @@ const resources: Resource[] = [
 export default function ResourcesPage() {
   const [selectedDomain, setSelectedDomain] = useState<string>("all");
   const [selectedSubdomain, setSelectedSubdomain] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(8);
 
   const filteredResources = useMemo(() => {
+    const query = searchQuery.toLowerCase();
     return resources.filter(res => 
       (selectedDomain === "all" || res.domain === selectedDomain) && 
-      (selectedSubdomain === "all" || res.subdomain === selectedSubdomain)
+      (selectedSubdomain === "all" || res.subdomain === selectedSubdomain) &&
+      (res.title.toLowerCase().includes(query) || res.description.toLowerCase().includes(query))
     );
-  }, [selectedDomain, selectedSubdomain]);
+  }, [selectedDomain, selectedSubdomain, searchQuery]);
 
   const displayedResources = filteredResources.slice(0, visibleCount);
 
@@ -247,6 +250,18 @@ export default function ResourcesPage() {
 
       <section className="resourcesContent">
         <div className="resourcesToolbar">
+          <label className="resourceSearchField">
+            <span>Search resources</span>
+            <input 
+              placeholder="Search by keyword, topic, or title..." 
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setVisibleCount(8);
+              }}
+            />
+          </label>
+
           <label className="resourceFilterField">
             <span>Domain</span>
             <select 

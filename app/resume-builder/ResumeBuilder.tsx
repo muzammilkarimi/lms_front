@@ -24,11 +24,11 @@ type ResumeState = {
 };
 
 const initialResume: ResumeState = {
-  name: "Raj Student",
+  name: "Demo Student",
   role: "Frontend Developer",
-  email: "raj@example.com",
+  email: "student@example.com",
   phone: "+91 98765 43210",
-  links: "linkedin.com/in/raj | github.com/raj",
+  links: "linkedin.com/in/student | github.com/student",
   summary: "Computer Science student seeking a fresher software role with strong foundations in frontend development, APIs, SQL, and problem solving.",
   education: "B.Tech Computer Science, 2026 - ABC Institute of Technology, CGPA: 8.4/10\nClass XII - Science Stream, 2022, 86%",
   skills: "React, TypeScript, JavaScript, Python, SQL, HTML, CSS, Git",

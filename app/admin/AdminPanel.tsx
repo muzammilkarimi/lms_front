@@ -545,19 +545,22 @@ export function AdminPanel() {
       <>
         <div className="adminOverviewGrid">
           <article className="adminOverviewCard">
+            <div className="cardIcon">💼</div>
             <span className="adminEntityLabel">Jobs</span>
             <strong>{adminJobs.length}</strong>
-            <p>Open roles ready for review and update.</p>
+            <p>Open roles ready for review</p>
           </article>
           <article className="adminOverviewCard">
+            <div className="cardIcon">👥</div>
             <span className="adminEntityLabel">Applicants</span>
             <strong>{totalApplications}</strong>
-            <p>Students currently in the hiring pipeline.</p>
+            <p>Students in hiring pipeline</p>
           </article>
           <article className="adminOverviewCard">
+            <div className="cardIcon">📅</div>
             <span className="adminEntityLabel">Events</span>
             <strong>{adminEvents.length}</strong>
-            <p>Upcoming sessions and drives published.</p>
+            <p>Upcoming sessions published</p>
           </article>
         </div>
 
@@ -826,17 +829,37 @@ export function AdminPanel() {
                       }}
                     >
                       <div className="adminApplicantSummary">
-                        <div>
-                          <h3>{application.student.name}</h3>
-                          <p>
-                            {application.student.email} | {application.student.phone}
-                          </p>
+                        <div className="applicantHeader">
+                          <div className="applicantAvatar">
+                            {application.student.name.charAt(0)}
+                          </div>
+                          <div className="applicantCore">
+                            <h3>{application.student.name}</h3>
+                            <span>{application.student.email}</span>
+                          </div>
+                          <div className={`adminStatusPill status-${application.status}`}>
+                            {formatStatusLabel(application.status)}
+                          </div>
                         </div>
 
-                        <div className="adminApplicantSignals">
-                          <span>Resume {application.resume_completion}%</span>
-                          <span>Mock {application.latest_mock_score ?? "-"}</span>
-                          <span>ATS {application.ats_score ?? "-"}</span>
+                        <div className="applicantStats">
+                          <div className="statMiniItem">
+                            <small>Interview Score</small>
+                            <div className="statValueRow">
+                              <span className={application.latest_mock_score ? "hasScore" : ""}>
+                                {application.latest_mock_score ?? "N/A"}
+                              </span>
+                              {application.latest_mock_score ? <div className="scoreIndicator" style={{width: `${application.latest_mock_score * 10}%`}}></div> : null}
+                            </div>
+                          </div>
+                          <div className="statMiniItem">
+                            <small>Resume Quality</small>
+                            <span>{application.resume_completion}%</span>
+                          </div>
+                          <div className="statMiniItem">
+                            <small>ATS Match</small>
+                            <span>{application.ats_score ?? "-"}%</span>
+                          </div>
                         </div>
 
                         {application.student.skills.length ? (
