@@ -75,9 +75,58 @@ export function StudentDashboard() {
   if (isLoading) {
     return (
       <main className="studentDashboardPage">
-        <section className="studentEmptyPanel" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-          <div className="loadingSpinner"></div>
-          <h2>{message}</h2>
+        <section className="studentDashboardHero">
+          <div style={{ flex: 1 }}>
+            <div className="skeleton skeleton-title" style={{ width: '60%', height: '40px' }}></div>
+            <div className="skeleton skeleton-text" style={{ width: '80%' }}></div>
+            <div className="skeleton skeleton-text" style={{ width: '50%' }}></div>
+          </div>
+          <div className="skeleton skeleton-button"></div>
+        </section>
+
+        <section className="studentMetricGrid">
+          <article>
+            <div className="skeleton skeleton-title" style={{ width: '40px', marginBottom: '8px' }}></div>
+            <div className="skeleton skeleton-text" style={{ width: '80px', margin: 0 }}></div>
+          </article>
+          <article>
+            <div className="skeleton skeleton-title" style={{ width: '30px', marginBottom: '8px' }}></div>
+            <div className="skeleton skeleton-text" style={{ width: '80px', margin: 0 }}></div>
+          </article>
+          <article>
+            <div className="skeleton skeleton-title" style={{ width: '40px', marginBottom: '8px' }}></div>
+            <div className="skeleton skeleton-text" style={{ width: '110px', margin: 0 }}></div>
+          </article>
+          <article>
+            <div className="skeleton skeleton-title" style={{ width: '40px', marginBottom: '8px' }}></div>
+            <div className="skeleton skeleton-text" style={{ width: '110px', margin: 0 }}></div>
+          </article>
+        </section>
+
+        <section className="studentDashboardGrid">
+          <div className="studentActionPanel">
+            <div className="skeleton skeleton-text" style={{ width: '40%', marginBottom: '16px' }}></div>
+            <div className="skeleton skeleton-title" style={{ width: '70%', height: '24px', marginBottom: '24px' }}></div>
+            <div className="skeleton skeleton-button" style={{ width: '100%', marginBottom: '12px', height: '48px' }}></div>
+            <div className="skeleton skeleton-button" style={{ width: '100%', marginBottom: '12px', height: '48px' }}></div>
+            <div className="skeleton skeleton-button" style={{ width: '100%', marginBottom: '12px', height: '48px' }}></div>
+            <div className="skeleton skeleton-button" style={{ width: '100%', height: '48px' }}></div>
+          </div>
+
+          <div className="studentDashboardStack">
+            <div className="studentApplicationsPanel">
+              <div className="skeleton skeleton-text" style={{ width: '120px', marginBottom: '16px' }}></div>
+              <div className="skeleton skeleton-title" style={{ width: '40%', height: '24px', marginBottom: '20px' }}></div>
+              <div className="skeleton skeleton-card" style={{ height: '80px', marginBottom: '12px' }}></div>
+              <div className="skeleton skeleton-card" style={{ height: '80px' }}></div>
+            </div>
+
+            <div className="studentCodingPanel">
+              <div className="skeleton skeleton-text" style={{ width: '130px', marginBottom: '16px' }}></div>
+              <div className="skeleton skeleton-title" style={{ width: '50%', height: '24px', marginBottom: '20px' }}></div>
+              <div className="skeleton skeleton-card" style={{ height: '70px', marginBottom: '12px' }}></div>
+            </div>
+          </div>
         </section>
       </main>
     );
