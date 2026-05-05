@@ -47,11 +47,13 @@ function statusLabel(value: string) {
 export function StudentDashboard() {
   const [data, setData] = useState<StudentDashboardData | null>(null);
   const [message, setMessage] = useState("Loading your workspace...");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const token = getStudentToken();
     if (!token) {
       setMessage("Login to open your student dashboard.");
+      setIsLoading(false);
       return;
     }
 
@@ -66,8 +68,20 @@ export function StudentDashboard() {
         setData(payload);
         setMessage("");
       })
-      .catch((error: Error) => setMessage(error.message));
+      .catch((error: Error) => setMessage(error.message))
+      .finally(() => setIsLoading(false));
   }, []);
+
+  if (isLoading) {
+    return (
+      <main className="studentDashboardPage">
+        <section className="studentEmptyPanel" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="loadingSpinner"></div>
+          <h2>{message}</h2>
+        </section>
+      </main>
+    );
+  }
 
   if (!data) {
     return (
