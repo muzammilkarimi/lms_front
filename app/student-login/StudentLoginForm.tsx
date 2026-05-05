@@ -5,10 +5,10 @@ import { API_BASE_URL } from "../lib/api";
 import { clearStudentToken, getStudentToken, setStudentToken } from "../lib/studentAuth";
 
 export function StudentLoginForm() {
-  const [email, setEmail] = useState("student@example.com");
-  const [password, setPassword] = useState("student123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [message, setMessage] = useState("Use the demo student or register a new account.");
+  const [message, setMessage] = useState("Sign in to your account or create a new one.");
 
   useEffect(() => {
     let ignore = false;
@@ -29,7 +29,7 @@ export function StudentLoginForm() {
         if (!response.ok) {
           clearStudentToken();
           if (!ignore) {
-            setMessage("Use the demo student or register a new account.");
+            setMessage("Sign in to your account or create a new one.");
           }
           return;
         }
@@ -138,12 +138,6 @@ export function StudentLoginForm() {
           </a>
         </div>
 
-        <div className="studentAuthHint">
-          <strong>Demo login</strong>
-          <span>
-            <code>student@example.com</code> / <code>student123</code>
-          </span>
-        </div>
 
         <p className="studentAuthMessage">{message}</p>
       </form>
