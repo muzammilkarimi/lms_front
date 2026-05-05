@@ -8884,3 +8884,28 @@ button:disabled {
   opacity: 0.8;
 }
 
+.passwordInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.passwordInputWrapper input {
+  width: 100%;
+  padding-right: 40px;
+}
+.passwordToggleBtn {
+  position: absolute;
+  right: 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+.passwordToggleBtn:hover {
+  color: var(--accent);
+}
