@@ -85,7 +85,7 @@ export function MockInterviewTool() {
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [answerCoaching, setAnswerCoaching] = useState<AnswerCoaching | null>(null);
   const [message, setMessage] = useState("Add interview details, then start the live interview.");
-  const [provider, setProvider] = useState<"ollama" | "fallback" | "">("");
+  const [provider, setProvider] = useState<"gemini" | "ollama" | "fallback" | "">("");
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
